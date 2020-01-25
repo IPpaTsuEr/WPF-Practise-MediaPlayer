@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root>
+  <OpenBehavior>1</OpenBehavior>
+  <Volume>0.5</Volume>
+  <UserName>Bilibili</UserName>
+  <MediaTypes>.mp4|.mp3</MediaTypes>
+  <ListenPath>
+    <Path>E:\Windows\Downloads</Path>
+  </ListenPath>
+  <UserImage>
+  </UserImage>
+  <ListStates>0</ListStates>
+  <EnableRealTimeSearch>False</EnableRealTimeSearch>
+</Root>

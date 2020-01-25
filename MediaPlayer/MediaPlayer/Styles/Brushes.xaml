@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MediaPlayer.Styles">
+    <SolidColorBrush x:Key="HighlightBrushKey"></SolidColorBrush>
+    <SolidColorBrush x:Key="MouseOverBackground"></SolidColorBrush>
+    <SolidColorBrush x:Key="MouseOverBorder"></SolidColorBrush>
+    <SolidColorBrush x:Key="PressedBackground"></SolidColorBrush>
+    <SolidColorBrush x:Key="PressedBorder"></SolidColorBrush>
+    
+    <SolidColorBrush x:Key="DisabledBackground" Color="LightGray"></SolidColorBrush>
+    <SolidColorBrush x:Key="DisabledBorder" Color="DarkGray"></SolidColorBrush>
+    <SolidColorBrush x:Key="DisabledForeground" Color="Gray"></SolidColorBrush>
+</ResourceDictionary>

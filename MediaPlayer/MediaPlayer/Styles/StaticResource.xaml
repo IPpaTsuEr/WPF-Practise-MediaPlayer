@@ -1,0 +1,116 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MediaPlayer.Styles"
+                    xmlns:cv="clr-namespace:MediaPlayer.Converts"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    >
+    <cv:TimeSpanToFormatString x:Key="TimeSpanConvet"></cv:TimeSpanToFormatString>
+    <cv:DurationToFormatString x:Key="DurationConvert"></cv:DurationToFormatString>
+    <cv:DurationToValue x:Key="DurationToValue"></cv:DurationToValue>
+    <cv:TimeSpanToValue x:Key="TimeSpanToValue"></cv:TimeSpanToValue>
+    <cv:MediaStatusToString x:Key="MediaConvert"></cv:MediaStatusToString>
+    <cv:VolumeToString x:Key="VolumeConvert"></cv:VolumeToString>
+    <cv:BrushToColor x:Key="BrushCovert"></cv:BrushToColor>
+    
+    <cv:SideListSelectors x:Key="ListSelector"></cv:SideListSelectors>
+    <cv:ReSearchButtonVisiable x:Key="ReSearchButtonVisiable"></cv:ReSearchButtonVisiable>
+
+    <cv:SortDirection x:Key="SortDirection"></cv:SortDirection>
+    <cv:EnableSortDirection x:Key="EnableSortDirection"></cv:EnableSortDirection>
+
+    <cv:SortIconAngle x:Key="SortIconAngle"></cv:SortIconAngle>
+    
+    <cv:StringToIconchar x:Key="StringIconConvert"></cv:StringToIconchar>
+    <cv:ListTypeToString x:Key="PlayTypeConvert"></cv:ListTypeToString>
+
+    <cv:BoolToVisib x:Key="BoolVisibilityConvert"></cv:BoolToVisib>
+    <cv:VisiblityToBool x:Key="VisibilityBoolConvert"></cv:VisiblityToBool>
+    
+    <cv:StringToImage x:Key="StringImageConvert"></cv:StringToImage>
+    <cv:PlayMultyParameter x:Key="PlayMultyConvert"></cv:PlayMultyParameter>
+    <cv:StringToTime x:Key="StringTimeConvert"></cv:StringToTime>
+    <cv:LovelyToString x:Key="LovelyConvert"></cv:LovelyToString>
+    <cv:LovelyForeground x:Key="LovelyForegrounConvert"></cv:LovelyForeground>
+    
+    <cv:CopyData x:Key="SideBarClone"></cv:CopyData>
+    <cv:MakeDataView x:Key="ViewConvert"></cv:MakeDataView>
+    <cv:LrcScroll x:Key="LrcScrollConvert"></cv:LrcScroll>
+    <cv:VideoLrcVisiable x:Key="VideoLrcVisiableConvert"></cv:VideoLrcVisiable>
+    <cv:LrcToItems x:Key="LrcItemConvert"></cv:LrcToItems>
+    <cv:LrcHoldSpace x:Key="LrcSpaceConvert"></cv:LrcHoldSpace>
+    <cv:RollImage x:Key="RollImageConvert"></cv:RollImage>
+
+    <cv:ListMenuFileter x:Key="ListMenuFileterConvert"></cv:ListMenuFileter>
+    
+
+    <cv:MediaListDeepCopy x:Key="SidebarDeepCopy"></cv:MediaListDeepCopy>
+    <cv:CopyMediaData x:Key="CopyMediaData"></cv:CopyMediaData>
+    
+    <FontFamily x:Key="AwesomeS">/Assets/Fonts/#Font Awesome 5 Free Solid</FontFamily>
+    <FontFamily x:Key="IconFont">/Assets/Fonts/#iconfont</FontFamily>
+
+    <cv:DebugConvert x:Key="Debuger"></cv:DebugConvert>
+
+    
+    <sys:String x:Key="ZoomIn">&#xe614;</sys:String>
+    <sys:String x:Key="ZoomOut">&#xe615;</sys:String>
+    <sys:String x:Key="Lrc">&#xe617;</sys:String>
+    <sys:String x:Key="LrcBig">&#xe619;</sys:String>
+    <sys:String x:Key="SortList">&#xe61d;</sys:String>
+    <sys:String x:Key="LrcImage">&#xe61e;</sys:String>
+    <sys:String x:Key="Group">&#xe61f;</sys:String>
+    <sys:String x:Key="SortArrow">&#xe620;</sys:String>
+    <sys:String x:Key="LrcMicro">&#xe621;</sys:String>
+    <sys:String x:Key="MusicLib">&#xe622;</sys:String>
+    <sys:String x:Key="VideoLib">&#xe623;</sys:String>
+    <sys:String x:Key="User">&#xe611;</sys:String>
+    <sys:String x:Key="Camera">&#xe610;</sys:String>
+    <sys:String x:Key="Plus">&#xe60f;</sys:String>
+    <sys:String x:Key="Floder">&#xe64c;</sys:String>
+    <sys:String x:Key="Disk">&#xe627;</sys:String>
+    <sys:String x:Key="Gabige">&#xe60d;</sys:String>
+    <sys:String x:Key="Video">&#xe62b;</sys:String>
+    <sys:String x:Key="ItemList">&#xe60c;</sys:String>
+    <sys:String x:Key="Heart">&#xe60e;</sys:String>
+    <sys:String x:Key="HeartSolid">&#xe60b;</sys:String>
+    
+    <sys:String x:Key="Muted">&#xe878;</sys:String>
+    <sys:String x:Key="Volume0">&#xe649;</sys:String>
+    <sys:String x:Key="Volume1">&#xe64a;</sys:String>
+    <sys:String x:Key="Volume2">&#xe648;</sys:String>
+    <sys:String x:Key="Volume3">&#xe647;</sys:String>
+    <sys:String x:Key="ListRepeat">&#xe609;</sys:String>
+    <sys:String x:Key="Random">&#xe61b;</sys:String>
+    <sys:String x:Key="ListSequence">&#xe63e;</sys:String>
+    <sys:String x:Key="SingleRepeat">&#xe62e;</sys:String>
+    <sys:String x:Key="MusicCircle">&#xe607;</sys:String>
+
+    <sys:String x:Key="Pause">&#xe640;</sys:String>
+    <sys:String x:Key="Stop">&#xe668;</sys:String>
+    <sys:String x:Key="Play">&#xe606;</sys:String>
+    <sys:String x:Key="List">&#xe604;</sys:String>
+    <sys:String x:Key="PlaySolid">&#xe784;</sys:String>
+    <sys:String x:Key="PreviewItem">&#xe670;</sys:String>
+    
+    <sys:String x:Key="ListCheck">&#xe763;</sys:String>
+    <sys:String x:Key="SquareList">&#xe804;</sys:String>
+    <sys:String x:Key="Search">&#xe6e7;</sys:String>
+    <sys:String x:Key="SearchList">&#xe60a;</sys:String>
+    <sys:String x:Key="MusicList">&#xe61a;</sys:String>
+    
+    <sys:String x:Key="History">&#xe61c;</sys:String>
+    <sys:String x:Key="Download">&#xe969;</sys:String>
+    <sys:String x:Key="Downloading">&#xe601;</sys:String>
+    <sys:String x:Key="Skin">&#xe69e;</sys:String>
+    <sys:String x:Key="SkinSolid">&#xe608;</sys:String>
+    <sys:String x:Key="MusicSolid">&#xe600;</sys:String>
+    <sys:String x:Key="Music">&#xe603;</sys:String>
+    <sys:String x:Key="Image">&#xe605;</sys:String>
+    <sys:String x:Key="ImageLib">&#xe602;</sys:String>
+
+    <sys:String x:Key="EditeLine">&#xe613;</sys:String>
+    <sys:String x:Key="EditePanel">&#xe612;</sys:String>
+    <sys:String x:Key="SelectedAll">&#xe624;</sys:String>
+    <sys:String x:Key="SelectedRevers">&#xe625;</sys:String>
+    
+</ResourceDictionary>

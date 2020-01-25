@@ -1,0 +1,76 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MediaPlayer.Styles.Themes">
+
+    <SolidColorBrush x:Key="MainBackground" Color="#FF1E1E1E"></SolidColorBrush>
+    <SolidColorBrush x:Key="Foreground" Color="#FF888888"></SolidColorBrush>
+
+    <SolidColorBrush x:Key="BorderLine" Color="#4FB5B8C1"></SolidColorBrush>
+    <SolidColorBrush x:Key="UnderLine" Color="#5F4799D5"></SolidColorBrush>
+    <SolidColorBrush x:Key="TopMaskOverly" Color="#FF3E414A"></SolidColorBrush>
+
+    <Color x:Key="InnerShadowColor" >#FF323232</Color>
+    <Color x:Key="ImageShadowColor" >#FF323232</Color>
+    <Color x:Key="OuterShadowColor" >#FFCCCCCC</Color>
+
+    <SolidColorBrush x:Key="SideBarBackground" Color="#FF2D2D30"></SolidColorBrush>
+    <SolidColorBrush x:Key="SideBarSelectedBackground" Color="#F03E414A"></SolidColorBrush>
+    <SolidColorBrush x:Key="SideBarHoverBackground" Color="#1FECECEC"></SolidColorBrush>
+    <SolidColorBrush x:Key="SideBarHoverForeground" Color="Black"></SolidColorBrush>
+    <SolidColorBrush x:Key="SideBarSideSymbol" Color="#FF4799D5"></SolidColorBrush>
+    <SolidColorBrush x:Key="SideBarForeground" Color="#FFEEEEEE"></SolidColorBrush>
+    <SolidColorBrush x:Key="SideBarUnableForeground" Color="DarkGray"></SolidColorBrush>
+
+    <SolidColorBrush x:Key="ControlBarBackground" Color="#FF2D2D30"></SolidColorBrush>
+    <SolidColorBrush x:Key="ControlBarForeground" Color="#FFDBDBE5"></SolidColorBrush>
+    <SolidColorBrush x:Key="ControlBarHoverForeground" Color="White"></SolidColorBrush>
+    <SolidColorBrush x:Key="ControlBarHoverBackground" Color="#23232323"></SolidColorBrush>
+
+    <SolidColorBrush x:Key="ViewPortBackground" Color="#AA111111"></SolidColorBrush>
+    <SolidColorBrush x:Key="ViewPortForeground" Color="#FFDBDBE5"></SolidColorBrush>
+
+    <SolidColorBrush x:Key="SliderForeground" Color="#FFEDFCF3"></SolidColorBrush>
+    <SolidColorBrush x:Key="SliderBackground" Color="LightBlue"></SolidColorBrush>
+    <SolidColorBrush x:Key="SliderBorderground" Color="#F0045896"></SolidColorBrush>
+    <SolidColorBrush x:Key="SliderHightLightground" Color="#FFDBDBE5"></SolidColorBrush>
+    <Color x:Key="SliderHightLightColor">#FFDBDBE5</Color>
+
+    <SolidColorBrush x:Key="ScrollBarNormal" Color="#6F5789AC"></SolidColorBrush>
+    <SolidColorBrush x:Key="ScrollBarHover" Color="#FF4799D5"></SolidColorBrush>
+
+    <SolidColorBrush x:Key="LovelyMarkForeground" Color="#FFF2B356"></SolidColorBrush>
+
+    <Color x:Key="MP3StartColor">#1A2D2D30</Color>
+    <Color x:Key="MP3EndColor">#FC2D2D30</Color>
+
+    <SolidColorBrush x:Key="BaseButtonBackground" Color="#FF045896"></SolidColorBrush>
+    <SolidColorBrush x:Key="BaseButtonForeground" Color="White"></SolidColorBrush>
+    <SolidColorBrush x:Key="BaseButtonBorderground" Color="Transparent"></SolidColorBrush>
+
+    <LinearGradientBrush x:Key="BaseButtonHoverground" StartPoint="0.5,0" EndPoint="0.5,1">
+        <GradientStop Color="#00112233" Offset="0"></GradientStop>
+        <GradientStop Color="#00112233" Offset="0.4"></GradientStop>
+        <GradientStop Color="#90CCCCCC" Offset="1"></GradientStop>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BaseButtonPressedground" StartPoint="0.5,0" EndPoint="0.5,1">
+        <GradientStop Color="#00112233" Offset="0"></GradientStop>
+        <GradientStop Color="#A0EEEEEE" Offset="1"></GradientStop>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="ListBackgroud" Color="#FF3E414A"></SolidColorBrush>
+    <SolidColorBrush x:Key="ListItemHoverBackgroud" Color="#F1FAF5D5"></SolidColorBrush>
+    <SolidColorBrush x:Key="ListItemSelectedBackgroud" Color="#FF8DDAEC"></SolidColorBrush>
+    <SolidColorBrush x:Key="OddListItemBackgroud" Color="#1FFBD7C1"></SolidColorBrush>
+    <SolidColorBrush x:Key="EvenListItemBackgroud" Color="#1F4799D5"></SolidColorBrush>
+
+    <SolidColorBrush x:Key="SureButtonBackground" Color="#FF4799D5"></SolidColorBrush>
+    <SolidColorBrush x:Key="SureButtonForeground" Color="Black"></SolidColorBrush>
+    <SolidColorBrush x:Key="SureButtonBorderground" Color="#FF4799D5"></SolidColorBrush>
+
+    <SolidColorBrush x:Key="CanceButtonBorderground" Color="#FFFAF5D5"></SolidColorBrush>
+    <SolidColorBrush x:Key="CanceButtonForeground" Color="Black"></SolidColorBrush>
+    <SolidColorBrush x:Key="CanceButtonBackground" Color="#FFFAF5D5"></SolidColorBrush>
+
+    <SolidColorBrush x:Key="CloseButtonBackground" Color="Red"></SolidColorBrush>
+    <SolidColorBrush x:Key="CloseButtonForeground" Color="Black"></SolidColorBrush>
+</ResourceDictionary>

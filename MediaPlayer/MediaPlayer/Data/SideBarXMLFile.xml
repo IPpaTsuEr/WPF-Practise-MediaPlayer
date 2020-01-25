@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SideBar>
+  <Item TabIndex="1" Icon="e6e7" Interactiveable="True" IsSelected="True" IsMenuable="false" GroupBy="Type" SortBy="Name" SortDirection="0">搜索</Item>
+
+  <Item TabIndex="2" Icon="" Interactiveable="False" IsSelected="False" IsMenuable="false" GroupBy="Type" SortBy="Name" SortDirection="0">我的音乐</Item>
+  <Item TabIndex="2" Icon="e61c" Interactiveable="True" IsSelected="True" IsMenuable="false" GroupBy="" SortBy="" SortDirection="0">播放历史</Item>
+  <Item TabIndex="2" Icon="e603" Interactiveable="True" IsSelected="False" IsMenuable="false" GroupBy="Type" SortBy="Name" SortDirection="0">本地媒体</Item>
+  <Item TabIndex="2" Icon="e62b" Interactiveable="True" IsSelected="False" IsMenuable="false" GroupBy="Type" SortBy="Name" SortDirection="0">本地视频</Item>
+  <Item TabIndex="2" Icon="e605" Interactiveable="True" IsSelected="False" IsMenuable="false" GroupBy="Type" SortBy="Name" SortDirection="0">本地图片</Item>
+  
+  <Item TabIndex="1" Icon="" Interactiveable="False" IsSelected="False" IsMenuable="false"  GroupBy="Type" SortBy="Name" SortDirection="0">创建的歌单</Item>
+  <Item TabIndex="2" Icon="e60e" Interactiveable="True" IsSelected="False" IsMenuable="true" GroupBy="Type" SortBy="Name" SortDirection="0">最喜爱的音乐</Item>
+</SideBar>

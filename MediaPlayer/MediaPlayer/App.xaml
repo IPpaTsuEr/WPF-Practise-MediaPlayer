@@ -1,0 +1,16 @@
+﻿<Application x:Class="MediaPlayer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:MediaPlayer"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/Themes/Blue.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/Styles/StaticResource.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/Styles/StaticControlStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/Styles/ControlStyles.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

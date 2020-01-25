@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root>
+  <Stats IsCurrent="False">搜索</Stats>
+  <Stats IsCurrent="False">我的音乐</Stats>
+  <Stats IsCurrent="False">播放历史</Stats>
+  <Stats IsCurrent="True">本地媒体</Stats>
+  <Stats IsCurrent="False">本地视频</Stats>
+  <Stats IsCurrent="False">本地图片</Stats>
+  <Stats IsCurrent="False">创建的歌单</Stats>
+  <Stats IsCurrent="False">最喜爱的音乐</Stats>
+</Root>

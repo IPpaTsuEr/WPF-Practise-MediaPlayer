@@ -1,0 +1,1925 @@
+﻿<fl:FrameLessWindow
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MediaPlayer"
+        xmlns:fl="clr-namespace:FrameLessWindow;assembly=FrameLessWindow"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:ie="http://schemas.microsoft.com/expression/2010/interactions"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:ed="clr-namespace:EditTextBox;assembly=EditTextBox"
+        xmlns:sb="clr-namespace:SearchBox;assembly=SearchBox"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="MediaPlayer.MainWindow"
+        mc:Ignorable="d" TitleBarHeight="32" ToolBarHeight="0" StateBarHeight="0" 
+        ResizeMode="CanResizeWithGrip"
+        Title="媒体播放器"  
+        x:Name="MainWin"
+        Height="450" Width="800" MinHeight="600" MinWidth="800" BorderThickness="0" 
+        BorderBrush="{DynamicResource BorderLine}" Margin="0"
+        Background="{DynamicResource MainBackground}"
+        Foreground="{DynamicResource Foreground}" 
+        ShadowColor="{StaticResource OuterShadowColor}" ShadowOpacity="1" ShadowSize="6" Padding="6">
+    <fl:FrameLessWindow.Resources>
+
+        <CollectionViewSource x:Key="NotUseView" 
+                          Source="{Binding CurrentList.List, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Type"/>
+            </CollectionViewSource.GroupDescriptions>
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Name" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+
+
+    </fl:FrameLessWindow.Resources>
+
+    <fl:FrameLessWindow.TitleBarContext>
+        <TextBlock Text="{Binding Title}" FontSize="14" Foreground="White"
+                   Margin="24,0" VerticalAlignment="Center"/>
+    </fl:FrameLessWindow.TitleBarContext>
+
+    <fl:FrameLessWindow.TitleBarExContent>
+        <Button Width="32" Command="{Binding SkinChangeCommand}" CommandParameter="Gray">
+            <TextBlock FontFamily="{StaticResource AwesomeS}" Text="&#xF553;" Foreground="White" TextAlignment="Center"/>
+        </Button>
+    </fl:FrameLessWindow.TitleBarExContent>
+
+    <Grid Margin="0">
+
+        <!--主界面-->
+        <Grid x:Name="MainGrid" Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="64"/>
+            </Grid.RowDefinitions>
+
+            <!--上部界面-->
+            <Grid Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+
+                </Grid.ColumnDefinitions>
+                <!--左边侧栏 http://www.xinqixi.com/vplay/37650-1-1.html -->
+                <Grid  Background="{DynamicResource SideBarBackground}"  Margin="-1,0,0,0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <!--左侧上方标题栏-->
+                    <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderLine}">
+                        <StackPanel Orientation="Horizontal" Height="48" HorizontalAlignment="Right">
+                            <ToggleButton ToolTip="收起边侧栏" Margin="1" Width="48" Style="{StaticResource NothingToggleButton}">
+                                <TextBlock Style="{StaticResource IconText}" 
+                                           Text="{StaticResource SortList}" 
+                                           FontSize="18" Margin="2"
+                                           RenderTransformOrigin="0.5,0.5">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform Angle="90"></RotateTransform>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </ToggleButton>
+                        </StackPanel>
+                    </Border>
+                   <!--左侧菜单栏列表-->
+                    <ListView Grid.Row="1" x:Name="Side_Bar"
+                          Style="{StaticResource SideList}"
+                          ItemContainerStyle="{StaticResource ListViewItemStyle}"
+                          ItemsSource="{Binding SideBarSources, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                          ItemTemplateSelector="{StaticResource ListSelector}" SelectionMode="Single">
+                        <!--<i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding DataContext.PageChangeCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+                                                   CommandParameter="{Binding SelectedItem, ElementName=Side_Bar}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>-->
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger  EventName="SelectionChanged">
+                                <ie:CallMethodAction MethodName="Side_Bar_SelectionChanged" TargetObject="{Binding DataContext,RelativeSource={RelativeSource AncestorType=Window}}" ></ie:CallMethodAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                    </ListView>
+                    
+                    <!--左侧下方用户栏-->
+                    <Border Grid.Row="2"  BorderBrush="{DynamicResource BorderLine}" BorderThickness="0,1,0,0">
+                        <Grid Height="58" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition Width="32"></ColumnDefinition>
+                                <ColumnDefinition Width="32"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Border CornerRadius="25" Background="Transparent" Height="48" Width="48" Margin="4" >
+                                <Border.Effect>
+                                    <DropShadowEffect Color="{DynamicResource InnerShadowColor}" ShadowDepth="0" Direction="0" BlurRadius="4"/>
+                                </Border.Effect>
+                                <Image Height="48" Width="48"  Stretch="UniformToFill" 
+                                            Source="{Binding DataContext.US.UserImage,RelativeSource={RelativeSource AncestorType=Window},Converter={StaticResource StringImageConvert},ConverterParameter=User}" >
+
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24"/>
+                                    </Image.Clip>
+                                    <Image.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" 
+                                                      Command="{Binding DataContext.TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                      CommandParameter="ShowUserMask"/>
+                                    </Image.InputBindings>
+                                </Image>
+                            </Border>
+
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="4,0"
+                                       ToolTip="{Binding DataContext.US.UserName}" 
+                                       Foreground="{DynamicResource SideBarForeground}"
+                                       Text="{Binding DataContext.US.UserName}"
+                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"></TextBlock>
+                            
+                            <Button Grid.Column="2">
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xF0E0;" FontFamily="{StaticResource AwesomeS}"></TextBlock>
+                            </Button>
+                            
+                            <Button Grid.Column="3" ToolTip="系统设置" Height="32" Margin="1"
+                                Command="{Binding DataContext.TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                CommandParameter="ShowSettingMask">
+                                <TextBlock Style="{StaticResource IconText}" Text="&#xF013;" FontFamily="{StaticResource AwesomeS}"></TextBlock>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!--中部列表栏-->
+                <TabControl Style="{StaticResource NoHeaderTabControlStyle}"  
+                            x:Name="MainListPanel" Margin="0" Padding="0" BorderThickness="0"
+                        SelectedIndex="{Binding SelectedItem.TabIndex, ElementName=Side_Bar}" 
+                        Grid.Column="1">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Loaded">
+                            <i:InvokeCommandAction Command="{Binding PlayerRegistCommands, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+                                               CommandParameter="{Binding ElementName=MainListPanel}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <!--通用列表界面-->
+                    <TabItem>
+                        
+                        <Grid Background="{DynamicResource ListBackgroud}">
+                            <!--列表功能按钮-->
+                            <StackPanel Orientation="Horizontal" TextElement.FontSize="16" 
+                                    Height="50" VerticalAlignment="Top"
+                                    Panel.ZIndex="2" Background="{DynamicResource ListBackgroud}"
+                                    Visibility="{Binding ShowListTitleContorlBar, Converter={StaticResource BoolVisibilityConvert}}">
+                                
+                                <Button Margin="30,0,15,0" 
+                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                    <Button.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                            <Binding Source="PlayAll"></Binding>
+                                            <Binding  ElementName="Side_Bar" Path="SelectedItem"></Binding>
+                                        </MultiBinding>
+                                    </Button.CommandParameter>
+                                    
+                                    <StackPanel Orientation="Horizontal" TextElement.FontSize="14" >
+                                        <TextBlock FontFamily="{StaticResource AwesomeS}" Foreground="{DynamicResource LovelyMarkForeground}" VerticalAlignment="Center"><Run Text="&#xF144;"/></TextBlock>
+                                        <TextBlock Margin="4,0"><Run Text="播放全部"/></TextBlock>
+                                        <TextBlock Text="{Binding Items.Count, ElementName=MainListView, StringFormat=(\{0\})}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <Border Width="1" Height="20" Background="{DynamicResource BorderLine}"/>
+
+                                <ToggleButton Style="{StaticResource ChangetoggleButton}" 
+                                              Margin="15,0" Height="32" Width="68" 
+                                              Command="{Binding DataContext.ApplyModifyCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                              IsChecked="{Binding IsChecked,ElementName=Head_Inner_Select,Mode=TwoWay}" >
+                                    <TextBlock FontFamily="{StaticResource AwesomeS}" Text="&#xF03A;" Foreground="{DynamicResource LovelyMarkForeground}"  VerticalAlignment="Center"/>
+                                    <ToggleButton.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                            <Binding Source="CancelView"></Binding>
+                                            <Binding Path="IsChecked" RelativeSource="{RelativeSource Mode=Self}"></Binding>
+                                            <Binding ElementName="MainListView"></Binding>
+                                        </MultiBinding>
+                                    </ToggleButton.CommandParameter>
+                                </ToggleButton>
+
+                                <!--附加控制按钮-->
+                                <StackPanel Orientation="Horizontal" Visibility="{Binding Path=CheckMode,Converter={StaticResource BoolVisibilityConvert}}">
+                                    <Button ToolTip="全选" Margin="4" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="SelectedAll"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SelectedAll}" FontSize="18" ></TextBlock>
+                                    </Button>
+                                    <Button ToolTip="反选" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="SelectedReavers"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SelectedRevers}" FontSize="18" ></TextBlock>
+                                    </Button>
+                                    <Border Height="32" Width="1" Background="{DynamicResource BorderLine}">
+                                    </Border>
+                                    <Button ToolTip="分组" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="GroupBy"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Group}" TextAlignment="Center"></TextBlock>
+                                    </Button>
+                                    <Button ToolTip="排序"  Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="SortBy"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SortList}" FontSize="18"></TextBlock>
+                                    </Button>
+                                    <Button  Height="32" Width="32"
+                                                         ToolTip="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortDirection,Converter={StaticResource SortDirection}}" 
+                                                              IsEnabled="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortBy,Converter={StaticResource EnableSortDirection}}"
+                                                              Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="SortDirection"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SortArrow}" RenderTransformOrigin="0.5,0.5">
+                                            <TextBlock.RenderTransform>
+                                                <RotateTransform Angle="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortDirection,Converter={StaticResource SortIconAngle}}"></RotateTransform>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
+                                    </Button>
+                                    <Border Height="32" Width="1" Background="{DynamicResource BorderLine}">
+                                    </Border>
+                                    <Button ToolTip="取消选择"  Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="ClearSelected">
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Gabige}"></TextBlock>
+                                    </Button>
+                                </StackPanel>
+
+                            </StackPanel>
+
+                            <!--滚动页面-->
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" 
+                                      VerticalScrollBarVisibility="Auto" Background="Transparent"
+                                      HorizontalAlignment="Stretch">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="ScrollChanged">
+                                        <i:InvokeCommandAction Command="{Binding DataContext.MouseWheelCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" CommandParameter="{Binding ElementName=ListControlBar}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                
+                                <Grid HorizontalAlignment="Stretch" Margin="30,20,30,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <!--歌单信息-->
+                                    <Grid Margin="0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="歌单" FontSize="16" Margin="0,6"/>
+
+                                        <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+
+
+                                                
+                                            <Image Grid.Column="0"  Height="200" Width="200" Margin="0" StretchDirection="Both" Stretch="UniformToFill"
+                                               Source="{Binding SelectedItem.Medias.Cover, Converter={StaticResource StringImageConvert},ConverterParameter=MediaList, ElementName=Side_Bar}"/>
+                                            <Button Grid.Column="0"
+                                                 VerticalAlignment="Top" 
+                                                 HorizontalAlignment="Right"
+                                                 BorderThickness="0"
+                                                 Command="{Binding DataContext.CoverCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                                 CommandParameter="{Binding SelectedItem.Medias, ElementName=Side_Bar}">
+                                               
+                                                <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Camera}" FontSize="20" Margin="15,1,5,1"></TextBlock>
+                                                <Button.Background>
+                                                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                                        <GradientStop Color="{DynamicResource MP3StartColor}" Offset="0"></GradientStop>
+                                                        <GradientStop Color="{DynamicResource MP3EndColor}" Offset="1"></GradientStop>
+                                                    </LinearGradientBrush>
+                                                </Button.Background>
+                                            </Button> 
+
+
+                                            <Grid Grid.Column="1" Margin="10,0">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="64"/>
+                                                    <RowDefinition Height="40"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="30"/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+                                                
+                                                
+                                                <TextBlock Grid.Row="0" FontSize="20" Height="40" VerticalAlignment="Center"
+                                                           Text="{Binding SelectedItem.Title, ElementName=Side_Bar}"/>
+
+                                                <Grid Grid.Row="1" MaxWidth="400" HorizontalAlignment="Left">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                        <ColumnDefinition Width="*" ></ColumnDefinition>
+                                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Image Grid.Column="0"  Height="36" Stretch="UniformToFill" Source="{Binding DataContext.US.UserImage,Converter={StaticResource StringImageConvert},ConverterParameter=User}">
+                                                        <Image.Clip>
+                                                            <EllipseGeometry Center="18,18" RadiusX="18" RadiusY="18"/>
+                                                        </Image.Clip>
+                                                    </Image>
+                                                    <TextBlock Grid.Column="1" Margin="10,0" FontSize="14" VerticalAlignment="Center" 
+                                                               TextTrimming="CharacterEllipsis"  ToolTip="{Binding DataContext.US.UserName}"><Run Text="{Binding DataContext.US.UserName}"/></TextBlock>
+                                                    <TextBlock Grid.Column="2" FontSize="12" VerticalAlignment="Center" 
+                                                               Text="{Binding SelectedItem.Medias.CreateDate, ElementName=Side_Bar, StringFormat={}{0:yyyy-MM-dd} 创建}"/>
+                                                    <ToggleButton Grid.Column="3"  ToolTip="更多操作" Margin="10,0,0,0"
+                                                                  Name="Open_Toggle" Click="Open_Toggle_Click"
+                                                                  Style="{StaticResource MediaListExt}"
+                                                                  ></ToggleButton>
+
+                                                </Grid>
+                                                
+                                                <!--停用的列表控制按钮-->
+                                                <!--<StackPanel Grid.Row="2" Orientation="Horizontal" Visibility="Collapsed">
+                                                    <Button Margin="6,0" Width="64" Height="23" Style="{x:Null}"
+                                                                    Command="{Binding DataContext.TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                                    CommandParameter="ShowModifyMask"
+                                                                    Content="编辑"
+                                                                    />
+                                                    <Button Margin="6,0" Width="64" Height="23" Style="{x:Null}" 
+                                                                Content="删除"
+                                                                Command="{Binding DataContext.TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                                   CommandParameter="ShowDeleteMask"
+                                                                />
+                                                </StackPanel>-->
+
+                                                <StackPanel Grid.Row="3" Orientation="Horizontal"  VerticalAlignment="Center">
+                                                    <TextBlock FontSize="12"><Run Text="标签:"/></TextBlock>
+                                                    <TextBlock FontSize="12" Margin="10,0,0,0" Text="{Binding SelectedItem.Medias.Tag, ElementName=Side_Bar}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <TextBlock FontSize="12"><Run Text="介绍:"/></TextBlock>
+                                                    <TextBlock FontSize="12" Margin="10,0,0,0" Text="{Binding SelectedItem.Medias.Summary, ElementName=Side_Bar}"/>
+                                                </StackPanel>
+
+                                            </Grid>
+                                        </Grid>
+
+                                        <!--列表功能按钮-->
+                                        <StackPanel x:Name="ListControlBar" Orientation="Horizontal" Grid.Row="2" 
+                                                TextElement.FontSize="16" Margin="0" Height="46">
+                                            <Button Margin="18,0"
+                                                    Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                <Button.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                        <Binding Source="PlayAll"></Binding>
+                                                        <Binding  ElementName="Side_Bar" Path="SelectedItem"></Binding>
+                                                    </MultiBinding>
+                                                </Button.CommandParameter>
+                                                
+                                                <StackPanel Orientation="Horizontal" TextElement.FontSize="14" >
+                                                    <TextBlock FontFamily="{StaticResource AwesomeS}" Foreground="{DynamicResource LovelyMarkForeground}" VerticalAlignment="Center"><Run Text="&#xF144;"/></TextBlock>
+                                                    <TextBlock Margin="4,0"><Run Text="播放全部"/></TextBlock>
+                                                    <TextBlock Text="{Binding Items.Count, ElementName=MainListView, StringFormat=(\{0\})}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Border Width="1" Height="20" Background="{DynamicResource BorderLine}"/>
+
+                                            <ToggleButton Style="{StaticResource ChangetoggleButton}"
+                                                          Margin="15,0" Height="32" Width="68" Name="Head_Inner_Select" 
+                                                          IsChecked="{Binding CheckMode,Mode=TwoWay}"
+                                                          Command="{Binding DataContext.ApplyModifyCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                <ToggleButton.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                        <Binding Source="CancelView"></Binding>
+                                                        <Binding Path="IsChecked" RelativeSource="{RelativeSource Mode=Self}"></Binding>
+                                                        <Binding ElementName="MainListView"></Binding>
+                                                    </MultiBinding>
+                                                </ToggleButton.CommandParameter>
+                                                <TextBlock FontFamily="{StaticResource AwesomeS}" Text="&#xF03A;" Foreground="{DynamicResource LovelyMarkForeground}"  VerticalAlignment="Center"/>
+
+                                            </ToggleButton>
+                                            
+                                            <!--附加控制按钮-->
+                                            <StackPanel Orientation="Horizontal" Visibility="{Binding Path=CheckMode,Converter={StaticResource BoolVisibilityConvert}}">
+                                                <Button ToolTip="全选" Margin="4" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                    <Button.CommandParameter>
+                                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                            <Binding Source="SelectedAll"></Binding>
+                                                            <Binding ElementName="MainListView"></Binding>
+                                                        </MultiBinding>
+                                                    </Button.CommandParameter>
+                                                    <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SelectedAll}" FontSize="18" ></TextBlock>
+                                                </Button>
+                                                <Button ToolTip="反选" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                    <Button.CommandParameter>
+                                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                            <Binding Source="SelectedReavers"></Binding>
+                                                            <Binding ElementName="MainListView"></Binding>
+                                                        </MultiBinding>
+                                                    </Button.CommandParameter>
+                                                    <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SelectedRevers}" FontSize="18" ></TextBlock>
+                                                </Button>
+                                                <Border Height="32" Width="1" Background="{DynamicResource BorderLine}">
+                                                </Border>
+                                                <Button ToolTip="分组" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                    <Button.CommandParameter>
+                                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                            <Binding Source="GroupBy"></Binding>
+                                                            <Binding ElementName="MainListView"></Binding>
+                                                        </MultiBinding>
+                                                    </Button.CommandParameter>
+                                                    <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Group}" TextAlignment="Center"></TextBlock>
+                                                </Button>
+                                                <Button ToolTip="排序"  Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                    <Button.CommandParameter>
+                                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                            <Binding Source="SortBy"></Binding>
+                                                            <Binding ElementName="MainListView"></Binding>
+                                                        </MultiBinding>
+                                                    </Button.CommandParameter>
+                                                    <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SortList}" FontSize="18"></TextBlock>
+                                                </Button>
+                                                <Button  Height="32" Width="32"
+                                                         ToolTip="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortDirection,Converter={StaticResource SortDirection}}" 
+                                                              IsEnabled="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortBy,Converter={StaticResource EnableSortDirection}}"
+                                                              Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                    <Button.CommandParameter>
+                                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                            <Binding Source="SortDirection"></Binding>
+                                                            <Binding ElementName="MainListView"></Binding>
+                                                        </MultiBinding>
+                                                    </Button.CommandParameter>
+                                                    <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SortArrow}" RenderTransformOrigin="0.5,0.5">
+                                                        <TextBlock.RenderTransform>
+                                                            <RotateTransform Angle="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortDirection,Converter={StaticResource SortIconAngle}}"></RotateTransform>
+                                                        </TextBlock.RenderTransform>
+                                                    </TextBlock>
+                                                </Button>
+                                                <Border Height="32" Width="1" Background="{DynamicResource BorderLine}">
+                                                </Border>
+                                                <Button ToolTip="取消选择"  Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="ClearSelected">
+                                                    <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Gabige}"></TextBlock>
+                                                </Button>
+                                            </StackPanel>
+
+
+                                        </StackPanel>
+                                    
+                                    </Grid>
+                                    <!--歌单列表-->
+                                    <ListView x:Name="MainListView" AlternationCount="2" VerticalAlignment="Top"
+                                        Grid.Row="1" Margin="0" BorderThickness="0" Padding="0" Background="Transparent"
+                                        ItemsSource="{Binding ElementName=Side_Bar,Path=SelectedItem,Converter={StaticResource ViewConvert}}"
+                                        ItemTemplate="{StaticResource GroupListViewItemDataStyle}" 
+                                        ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
+                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                        >
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="PreviewMouseWheel">
+                                                <ie:CallMethodAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                                     MethodName="PopupEvent" />
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                        
+                                        <ListView.GroupStyle>
+                                            <GroupStyle ContainerStyle="{StaticResource GroupListViewStyle}"/>
+                                        </ListView.GroupStyle>
+                                    </ListView>
+
+                                </Grid>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+
+                    <!--搜索-->
+                    <TabItem>
+                        <Grid Background="{DynamicResource ListBackgroud}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <Border BorderBrush="{DynamicResource BorderLine}" BorderThickness="0,0,0,1" Margin="20,0"
+                                    VerticalAlignment="Top" Height="32">
+                                <TextBlock Text="搜索" VerticalAlignment="Center" Margin="10,0"  FontSize="16"></TextBlock>
+                            </Border>
+
+                            <Border Grid.Row="1" Height="34" Margin="20,20">
+                                <sb:SearchBox Name="Search_Box" 
+                                              Background="{DynamicResource EvenListItemBackgroud}" 
+                                              BorderBrush="{DynamicResource UnderLine}" 
+                                              BorderThickness="1" 
+                                              Padding="10,0"  
+                                              RealTimeSearch="{Binding DataContext.US.EnableRealTimeSearch,RelativeSource={RelativeSource AncestorType=Window}}">
+                                    <sb:SearchBox.SearchIcon>
+                                        <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource Search}"></TextBlock>
+                                    </sb:SearchBox.SearchIcon>
+                                    
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="OnSearchClick">
+                                            <i:InvokeCommandAction 
+                                                Command="{Binding DataContext.SearchCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                <i:InvokeCommandAction.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                        <Binding Source="GlobalSearch"></Binding>
+                                                        <Binding Path="SearchText" ElementName="Search_Box"></Binding>
+                                                        <Binding ElementName="Search_Result"></Binding>
+                                                    </MultiBinding>
+                                                </i:InvokeCommandAction.CommandParameter>
+                                            </i:InvokeCommandAction>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                    
+                                </sb:SearchBox>
+                                
+                            </Border>
+
+                            <ListView Grid.Row="2" Background="{DynamicResource ListBackgroud}"  
+                                      Name="Search_Result" BorderThickness="0"
+                                      AlternationCount="2" 
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                      ItemsSource="{Binding DataContext.SearchHistory,RelativeSource={RelativeSource AncestorType=Window}}"
+                                      ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
+                                      ItemTemplate="{StaticResource GroupListViewItemDataStyle}">
+
+                            </ListView>
+                            
+                        </Grid>
+                    </TabItem>
+                    
+                    <!--无列表头界面-->
+                    <TabItem>
+
+                        <Grid  Background="{DynamicResource ListBackgroud}">
+                            
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" TextElement.FontSize="16" 
+                                        Height="50" VerticalAlignment="Top"
+                                        Panel.ZIndex="2" Background="{DynamicResource ListBackgroud}"
+                                        Visibility="{Binding ShowListTitleContorlBar, Converter={StaticResource BoolVisibilityConvert}}">
+                                <Button Margin="30,0,15,0"
+                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                    <Button.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                            <Binding Source="PlayAll"></Binding>
+                                            <Binding  ElementName="Side_Bar" Path="SelectedItem"></Binding>
+                                        </MultiBinding>
+                                    </Button.CommandParameter>
+                                    <StackPanel Orientation="Horizontal" TextElement.FontSize="14" >
+                                        <TextBlock FontFamily="{StaticResource AwesomeS}" Foreground="{DynamicResource LovelyMarkForeground}" VerticalAlignment="Center" Text="&#xF144;"></TextBlock>
+                                        <TextBlock Margin="4,0" Text="播放全部"></TextBlock>
+                                        <TextBlock Text="{Binding Items.Count, ElementName=NoHeaderMainListView, StringFormat=(\{0\})}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Border Width="1" Height="20" Background="{DynamicResource BorderLine}"/>
+                                <ToggleButton Style="{StaticResource ChangetoggleButton}" 
+                                              Margin="15,0" Height="32" Width="68" 
+                                              Command="{Binding DataContext.ApplyModifyCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                              IsChecked="{Binding IsChecked,ElementName=Inner_Select,Mode=TwoWay}">
+
+                                    <TextBlock FontFamily="{StaticResource AwesomeS}" Text="&#xF03A;" Foreground="{DynamicResource LovelyMarkForeground}"  VerticalAlignment="Center"/>
+                                    <ToggleButton.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                            <Binding Source="CancelView"></Binding>
+                                            <Binding Path="IsChecked" RelativeSource="{RelativeSource Mode=Self}"></Binding>
+                                            <Binding ElementName="NoHeaderMainListView"></Binding>
+                                        </MultiBinding>
+                                    </ToggleButton.CommandParameter>
+                                </ToggleButton>
+
+                                <!--附加控制按钮-->
+                                <StackPanel Orientation="Horizontal" Visibility="{Binding Path=CheckMode,Converter={StaticResource BoolVisibilityConvert}}">
+                                    <Button ToolTip="全选" Margin="4" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="SelectedAll"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SelectedAll}" FontSize="18" ></TextBlock>
+                                    </Button>
+                                    <Button ToolTip="反选" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="SelectedReavers"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SelectedRevers}" FontSize="18" ></TextBlock>
+                                    </Button>
+                                    <Border Height="32" Width="1" Background="{DynamicResource BorderLine}">
+                                    </Border>
+                                    <Button ToolTip="分组" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="GroupBy"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Group}" TextAlignment="Center"></TextBlock>
+                                    </Button>
+                                    <Button ToolTip="排序"  Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="SortBy"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SortList}" FontSize="18"></TextBlock>
+                                    </Button>
+                                    <Button  Height="32" Width="32"
+                                                         ToolTip="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortDirection,Converter={StaticResource SortDirection}}" 
+                                                              IsEnabled="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortBy,Converter={StaticResource EnableSortDirection}}"
+                                                              Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                        <Button.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                <Binding Source="SortDirection"></Binding>
+                                                <Binding ElementName="MainListView"></Binding>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SortArrow}" RenderTransformOrigin="0.5,0.5">
+                                            <TextBlock.RenderTransform>
+                                                <RotateTransform Angle="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortDirection,Converter={StaticResource SortIconAngle}}"></RotateTransform>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
+                                    </Button>
+                                    <Border Height="32" Width="1" Background="{DynamicResource BorderLine}">
+                                    </Border>
+                                    <Button ToolTip="取消选择"  Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="ClearSelected">
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Gabige}"></TextBlock>
+                                    </Button>
+                                </StackPanel>
+                                
+                            </StackPanel>
+
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" 
+                                          VerticalScrollBarVisibility="Auto">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="ScrollChanged">
+                                        <i:InvokeCommandAction Command="{Binding DataContext.MouseWheelCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+                                                               CommandParameter="{Binding ElementName=NoHeaderListControlBar}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="auto"></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+
+                                    <Border Background="Transparent" Height="32" BorderBrush="{DynamicResource BorderLine}" BorderThickness="0,0,0,1" Margin="20,0">
+                                
+                                        <TextBlock Text="{Binding SelectedItem.Title,ElementName=Side_Bar}" 
+                                                    FontSize="16" Margin="0,6"
+                                                   VerticalAlignment="Center"></TextBlock>
+                                    </Border>
+
+                                    <!--列表功能按钮-->
+                                    <Grid x:Name="NoHeaderListControlBar" Grid.Row="1" 
+                                                    TextElement.FontSize="16" Margin="20,10" Height="32">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <Button Margin="18,0" Grid.Column="0"                                     
+                                                Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                            <Button.CommandParameter>
+                                                <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                    <Binding Source="PlayAll"></Binding>
+                                                    <Binding  ElementName="Side_Bar" Path="SelectedItem"></Binding>
+                                                </MultiBinding>
+                                            </Button.CommandParameter>
+                                            <StackPanel Orientation="Horizontal" TextElement.FontSize="14" >
+                                                <TextBlock FontFamily="{StaticResource AwesomeS}" Foreground="{DynamicResource LovelyMarkForeground}" VerticalAlignment="Center" Text="&#xF144;"></TextBlock>
+                                                <TextBlock Margin="4,0" Text="播放全部"></TextBlock>
+                                                <TextBlock Text="{Binding Items.Count, ElementName=NoHeaderMainListView, StringFormat=(\{0\})}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Button>
+                                            
+                                        <Border Grid.Column="1" Width="1" Height="20" Background="{DynamicResource BorderLine}"/>
+
+                                        <ToggleButton Style="{StaticResource ChangetoggleButton}" Grid.Column="2"
+                                                      Margin="15,0" Height="32" Width="68" Name="Inner_Select" 
+                                                      Command="{Binding DataContext.ApplyModifyCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                                      IsChecked="{Binding CheckMode,Mode=TwoWay}" >
+                                            <TextBlock FontFamily="{StaticResource AwesomeS}" Text="&#xF03A;" Foreground="{DynamicResource LovelyMarkForeground}"  VerticalAlignment="Center"/>
+                                            <ToggleButton.CommandParameter>
+                                                <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                    <Binding Source="CancelView"></Binding>
+                                                    <Binding Path="IsChecked" RelativeSource="{RelativeSource Mode=Self}"></Binding>
+                                                    <Binding ElementName="NoHeaderMainListView"></Binding>
+                                                </MultiBinding>
+                                            </ToggleButton.CommandParameter>
+                                        </ToggleButton>
+
+                                        <!--附加控制按钮-->
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal" Visibility="{Binding Path=CheckMode,Converter={StaticResource BoolVisibilityConvert}}">
+                                            <Button ToolTip="全选" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                <Button.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                        <Binding Source="SelectedAll"></Binding>
+                                                        <Binding ElementName="MainListView"></Binding>
+                                                    </MultiBinding>
+                                                </Button.CommandParameter>
+                                                <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SelectedAll}" FontSize="18" ></TextBlock>
+                                            </Button>
+                                            <Button ToolTip="反选" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                <Button.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                        <Binding Source="SelectedReavers"></Binding>
+                                                        <Binding ElementName="MainListView"></Binding>
+                                                    </MultiBinding>
+                                                </Button.CommandParameter>
+                                                <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SelectedRevers}" FontSize="18" ></TextBlock>
+                                            </Button>
+                                            <Border Height="32" Width="1" Background="{DynamicResource BorderLine}">
+                                            </Border>
+                                            <Button ToolTip="分组" Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                <Button.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                        <Binding Source="GroupBy"></Binding>
+                                                        <Binding ElementName="MainListView"></Binding>
+                                                    </MultiBinding>
+                                                </Button.CommandParameter>
+                                                <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Group}" TextAlignment="Center"></TextBlock>
+                                            </Button>
+                                            <Button ToolTip="排序"  Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                <Button.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                        <Binding Source="SortBy"></Binding>
+                                                        <Binding ElementName="MainListView"></Binding>
+                                                    </MultiBinding>
+                                                </Button.CommandParameter>
+                                                <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SortList}" FontSize="18"></TextBlock>
+                                            </Button>
+                                            <Button  Height="32" Width="32"
+                                                         ToolTip="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortDirection,Converter={StaticResource SortDirection}}" 
+                                                              IsEnabled="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortBy,Converter={StaticResource EnableSortDirection}}"
+                                                              Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}">
+                                                <Button.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                        <Binding Source="SortDirection"></Binding>
+                                                        <Binding ElementName="MainListView"></Binding>
+                                                    </MultiBinding>
+                                                </Button.CommandParameter>
+                                                <TextBlock Style="{StaticResource IconText}" Text="{StaticResource SortArrow}" RenderTransformOrigin="0.5,0.5">
+                                                    <TextBlock.RenderTransform>
+                                                        <RotateTransform Angle="{Binding ElementName=Side_Bar,Path=SelectedItem.Medias.SortDirection,Converter={StaticResource SortIconAngle}}"></RotateTransform>
+                                                    </TextBlock.RenderTransform>
+                                                </TextBlock>
+                                            </Button>
+                                            <Border Height="32" Width="1" Background="{DynamicResource BorderLine}">
+                                            </Border>
+                                            <Button ToolTip="取消选择"  Height="32" Width="32"
+                                                        Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="ClearSelected">
+                                                <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Gabige}"></TextBlock>
+                                            </Button>
+                                        </StackPanel>
+
+                                        <Button Grid.Column="4" Style="{StaticResource BaseButton}"
+                                                Visibility="{Binding Path=SelectedItem,ElementName=Side_Bar,Converter={StaticResource ReSearchButtonVisiable},ConverterParameter=本地媒体}"
+                                                Command="{Binding DataContext.SearchCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                                >
+                                            <Button.CommandParameter>
+                                                <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                                    <Binding Source="ReLoadLocalMedias"></Binding>
+                                                    <Binding ElementName="Side_Bar" Path="SelectedItem"></Binding>
+                                                    <Binding ElementName="NoHeaderMainListView"></Binding>
+                                                </MultiBinding>
+                                            </Button.CommandParameter>
+                                            <TextBlock Margin="4" FontSize="14" Text="重新搜索"></TextBlock>
+                                        </Button>
+                                    </Grid>
+
+                                    <ListView Name="NoHeaderMainListView" Grid.Row="2" BorderThickness="0" Background="Transparent" 
+                                                  ItemsSource="{Binding Path=SelectedItem,ElementName=Side_Bar,Converter={StaticResource ViewConvert}}"
+                                                  AlternationCount="2" VerticalAlignment="Top"
+                                            Margin="20,0" Padding="0" Foreground="{StaticResource Foreground}"
+                                            ItemTemplate="{StaticResource GroupListViewItemDataStyle}"
+                                            ItemContainerStyle="{StaticResource GroupListViewItemStyle}"
+                                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                            ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                            
+                                            >
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="PreviewMouseWheel">
+                                                <ie:CallMethodAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                                         MethodName="PopupEvent" />
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+
+                                        <ListView.GroupStyle>
+                                            <GroupStyle ContainerStyle="{StaticResource GroupListViewStyle}"/>
+                                        </ListView.GroupStyle>
+                                        
+                                    </ListView>
+                                </Grid>
+                                
+                            </ScrollViewer>
+
+                        </Grid>
+
+                    </TabItem>
+                    
+                    
+                </TabControl>
+                
+                <!--播放界面-->
+                <Grid Grid.Column="0" Grid.ColumnSpan="2" Background="Black" Visibility="{Binding IsMediaVisible}">
+                    <!--Visibility="{Binding Visibility, ElementName=Player}">-->
+                    <!--<Grid.Style>
+                        <Style>
+                            <Setter Property="Grid.Visibility">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource VideoLrcVisiableConvert}">
+                                        <Binding ElementName="Player" Path="Visibility"></Binding>
+                                        <Binding ElementName="Lrc_GP" Path="Visibility"></Binding>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Grid.Style>-->
+                    
+                    <MediaElement x:Name="Player" LoadedBehavior="Manual" Visibility="Collapsed">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Loaded">
+                                <i:InvokeCommandAction Command="{Binding PlayerRegistCommands, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+                                                   CommandParameter="{Binding ElementName=Player}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </MediaElement>
+
+                    <!--歌词面板-->
+                    <Grid Margin="0" Name="Lrc_GP" Visibility="{Binding ElementName=Lrc_Panel,Path=Visibility}" ClipToBounds="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <!--歌词模糊背景-->
+                        <Border Grid.ColumnSpan="3" Margin="-100" >
+                                <Border.Effect>
+                                    <BlurEffect Radius="60" KernelType="Gaussian" ></BlurEffect>
+                                </Border.Effect>
+                                <Border.Background>
+                                    <ImageBrush Stretch="UniformToFill"
+                                            ImageSource="{Binding CurrentMedia.Cover,
+                                                          Converter={StaticResource 
+                                                          StringImageConvert},ConverterParameter=Media}">
+                                    
+                                    </ImageBrush>
+                                </Border.Background>
+                                                        
+                            <Border>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                        <GradientStop Color="{DynamicResource MP3StartColor}" Offset="0"></GradientStop>
+                                        <GradientStop Color="{DynamicResource MP3EndColor}" Offset="0.8"></GradientStop>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                        </Border>
+
+                        
+                        <!--居中显示-->
+                        <Grid Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition MaxHeight="400"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            
+                            <!--动画显示-->
+                            <Grid Grid.Column="0" Grid.Row="0" Margin="0,0,40,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+
+
+                                <Border Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,40,0,20">
+                                    <Grid Background="Transparent" Height="300" Width="300">
+                                        <!--唱片封底-->
+                                        <Image Height="300" Width="300"  Stretch="Uniform" RenderTransformOrigin="0.5,0.5" Name="Lrc_Roll_Image" Margin="0"
+                                               Source="{Binding CurrentMedia.Cover,Converter={StaticResource StringImageConvert}}">
+                                            <Image.Clip>
+                                                <EllipseGeometry Center="150,150" RadiusX="150" RadiusY="150"></EllipseGeometry>
+                                            </Image.Clip>
+
+                                        </Image>
+                                        <!--歌曲封面-->
+                                        <Image Height="200" Width="200"  Stretch="UniformToFill"
+                                               Source="{Binding CurrentMedia.Cover,Converter={StaticResource StringImageConvert},ConverterParameter=Media}">
+                                            <Image.Clip>
+                                                <EllipseGeometry Center="100,100" RadiusX="90" RadiusY="90"></EllipseGeometry>
+                                            </Image.Clip>
+                                        </Image>
+
+                                        <!--播放动画-->
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Setter Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <RotateTransform CenterX="150" CenterY="150"></RotateTransform>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsStoped}" Value="False">
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard x:Name="Roll_Ani">
+                                                                <BeginStoryboard.Storyboard>
+                                                                    <Storyboard>
+                                                                        <DoubleAnimation BeginTime="00:00:00" Duration="00:00:30"
+                                                                                         Storyboard.Target="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                                                         Storyboard.TargetProperty="RenderTransform.Angle"
+                                                                                         From="0" To="359" 
+                                                                                         RepeatBehavior="Forever">
+                                                                        </DoubleAnimation>
+                                                                        
+                                                                    </Storyboard>
+                                                                </BeginStoryboard.Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsPaused,RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
+                                                        <DataTrigger.EnterActions>
+                                                            <ResumeStoryboard BeginStoryboardName="Roll_Ani" ></ResumeStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <PauseStoryboard BeginStoryboardName="Roll_Ani" ></PauseStoryboard>
+                                                        </DataTrigger.ExitActions>
+
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+
+                                    </Grid>
+                                </Border>
+
+                                <!--剪裁（原因 FrameLessWindow的对应父容器未设置边缘裁剪，当margin定位到工具栏时会遮盖）-->
+                                <Border Margin="0,0,0,0" HorizontalAlignment="Stretch" 
+                                        VerticalAlignment="Top" Background="Transparent" ClipToBounds="True">
+                                    <!--唱臂-->
+                                    <Image Height="160" Source="./Assets/MediaHander.png" Margin="0,-17,0,0">
+                                        <Image.Style>
+                                            <Style TargetType="Image">
+                                                <Setter Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <RotateTransform Angle="-50" CenterX="20" CenterY="20"></RotateTransform>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPaused}" Value="False">
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard Name="Roll_Hander">
+                                                                <Storyboard>
+                                                                    <DoubleAnimation To="-16" Duration="00:00:01" 
+                                                                                     Storyboard.TargetProperty="RenderTransform.Angle"></DoubleAnimation>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation To="-50" Duration="00:00:01" Storyboard.TargetProperty="RenderTransform.Angle"></DoubleAnimation>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.ExitActions>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+
+                                </Border>
+                            </Grid>
+                            
+                            <!--歌词显示-->
+                            <Grid Grid.Column="1" Grid.Row="0" Name="Lrc_Grid" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition Height="20"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <!--信息-->
+                                <StackPanel Orientation="Vertical" Margin="0,20,0,20" TextElement.Foreground="{DynamicResource Foreground}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding CurrentMedia.Name}" TextTrimming="CharacterEllipsis"
+                                                   FontSize="18" ToolTip="{Binding CurrentMedia.Name}"
+                                                   MinWidth="250" MaxWidth="250"></TextBlock>
+                                        
+                                        <Border Margin="10,0" VerticalAlignment="Center" 
+                                                BorderBrush="{DynamicResource SideBarSideSymbol}" BorderThickness="1">
+                                            <StackPanel Orientation="Horizontal" Margin="2,1" HorizontalAlignment="Stretch" TextElement.FontSize="9">
+                                                <TextBlock Text="{Binding DataContext.CurrentMedia.BitRate}" Foreground="{DynamicResource SideBarSideSymbol}"></TextBlock>
+                                                <TextBlock Text="Kbs" Foreground="{DynamicResource SideBarSideSymbol}"></TextBlock>                                                
+                                            </StackPanel>
+
+                                        </Border>
+
+                                        <!--歌曲信息编辑按钮-->
+                                        <Button Height="20" Width="20"
+                                                Command="{Binding DataContext.TopMaskCommand}"
+                                                CommandParameter="ShowMediaMask">
+                                            <TextBlock FontSize="14" Text="{StaticResource EditeLine}" Style="{StaticResource IconText}"></TextBlock>
+                                        </Button>
+                                    </StackPanel>
+                                    <UniformGrid Rows="1" Columns="3" Margin="0,10" TextElement.FontSize="13">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="专辑:"></TextBlock>
+                                            <Button Margin="10,0">
+                                                <TextBlock Foreground="{DynamicResource UnderLine}" Text="{Binding CurrentMedia.Album}"></TextBlock>
+                                            </Button>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="歌手:"></TextBlock>
+                                            <Button Margin="10,0">
+                                                <TextBlock Foreground="{DynamicResource UnderLine}" Text="{Binding CurrentMedia.Artist}"></TextBlock>
+                                            </Button>
+                                        </StackPanel>
+                                    </UniformGrid>
+
+                                    <Border BorderThickness="0,0,0,0.5" BorderBrush="LightGray"></Border>
+                                </StackPanel>
+
+                                <!--歌词-->
+                                <ScrollViewer HorizontalAlignment="Stretch"   VerticalAlignment="Stretch" 
+                                              HorizontalContentAlignment="Center"   VerticalContentAlignment="Stretch"
+                                              HorizontalScrollBarVisibility="Disabled"  VerticalScrollBarVisibility="Visible"
+                                              Name="Lrc_Panel" 
+                                              Background="Transparent"
+                                              Visibility="Collapsed" Margin="0,-10" Padding="0" 
+                                              Grid.Row="1" Grid.Column="0" MinWidth="360"
+                                              >
+                                    <ScrollViewer.Tag>
+                                        <MultiBinding Converter="{StaticResource LrcScrollConvert}" ConverterParameter="64">
+                                            <Binding ElementName="Lrc_Panel"></Binding>
+                                            <Binding Path="CurrentPosition" RelativeSource="{RelativeSource AncestorType=Window}"></Binding>
+                                            <Binding Path="CurrentMedia" RelativeSource="{RelativeSource AncestorType=Window}"></Binding>
+                                            <Binding ElementName="Lrc_View"></Binding>
+                                            <Binding ElementName="Lrc_Grid" Path="ActualHeight"></Binding>
+                                        </MultiBinding>
+                                    </ScrollViewer.Tag>
+
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Loaded">
+                                            <i:InvokeCommandAction Command="{Binding PlayerRegistCommands,RelativeSource={RelativeSource AncestorType=Window}}" 
+                                                                   CommandParameter="{Binding ElementName=Lrc_Panel}"></i:InvokeCommandAction>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="{Binding ElementName=Lrc_Grid,Path=ActualHeight,Converter={StaticResource LrcSpaceConvert}}"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="{Binding ElementName=Lrc_Grid,Path=ActualHeight,Converter={StaticResource LrcSpaceConvert}}"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <ListView Margin="5"
+                                                  BorderThickness="0"
+                                                  HorizontalContentAlignment="Stretch" 
+                                                  Name="Lrc_View"
+                                                  ItemTemplate="{StaticResource LRC_ItemsDataStyle}"
+                                                  ItemContainerStyle="{StaticResource Lrc_itemStyle}"
+                                                  SelectedIndex="0" 
+                                                  Grid.Row="1" 
+                                                  Style="{StaticResource Lrc_List}"
+                                                  ItemsSource="{Binding CurrentMedia.Lrc,Converter={StaticResource LrcItemConvert}}">
+
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="PreviewMouseWheel">
+                                                    <ie:CallMethodAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                                     MethodName="PopupEvent" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </ListView>
+                                    </Grid>
+
+
+                                </ScrollViewer>
+                                
+                            </Grid>
+
+                            <!--歌词控制菜单-->
+                            <UniformGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                                         Margin="10,20,10,10" TextElement.FontSize="12"
+                                         Background="Transparent"  Height="32" Rows="1" Columns="9">
+                                <Button ToolTip="设置封面" 
+                                        Command="{Binding DataContext.CoverCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="MediaCover">
+                                    <TextBlock Text="{StaticResource LrcImage}" 
+                                               Style="{StaticResource IconText}"
+                                               FontSize="16"></TextBlock>
+                                </Button>
+                                
+                                <Border ToolTip="设置歌词"></Border>
+                                
+                                <Button ToolTip="设置歌词"
+                                        Command="{Binding DataContext.CoverCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="MediaLrc">
+                                    <TextBlock Text="{StaticResource Lrc}" 
+                                               Style="{StaticResource IconText}"
+                                               FontSize="16"></TextBlock>
+                                </Button>
+
+                                
+
+                                <Border></Border>
+
+                                <Button ToolTip="歌词滞后0.5秒" Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="LrcUp05">
+                                    <TextBlock Text="{StaticResource LrcBig}" 
+                                               Style="{StaticResource IconText}"
+                                               RenderTransformOrigin="0.5,0.5">
+                                        <TextBlock.RenderTransform>
+                                            <RotateTransform Angle="-90"></RotateTransform>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                </Button>
+                                <Button ToolTip="歌词滞后0.1秒"  Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="LrcUp01">
+                                    <TextBlock Text="{StaticResource LrcMicro}" 
+                                               Style="{StaticResource IconText}"
+                                               RenderTransformOrigin="0.5,0.5">
+                                        <TextBlock.RenderTransform>
+                                            <RotateTransform Angle="90"></RotateTransform>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                </Button>
+                                <Button ToolTip="重置歌词"  Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="LrcReset">
+                                    <TextBlock Text="O" Style="{StaticResource IconText}"></TextBlock>
+                                </Button>
+                                <Button  ToolTip="歌词快进0.1秒"  Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="LrcDown01">
+                                    <TextBlock Text="{StaticResource LrcMicro}" 
+                                               Style="{StaticResource IconText}"
+                                               RenderTransformOrigin="0.5,0.5">
+                                        <TextBlock.RenderTransform>
+                                            <RotateTransform Angle="-90"></RotateTransform>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                </Button>
+                                <Button  ToolTip="歌词快进0.5秒"  Command="{Binding DataContext.ListCommand,RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="LrcDown05">
+                                    <TextBlock Text="{StaticResource LrcBig}" 
+                                               Style="{StaticResource IconText}"
+                                               RenderTransformOrigin="0.5,0.5">
+                                        <TextBlock.RenderTransform>
+                                            <RotateTransform Angle="90"></RotateTransform>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                </Button>
+                            </UniformGrid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+
+            <!--底部控制栏-->
+            <Grid Grid.Row="1"
+                  Background="{DynamicResource ControlBarBackground}" 
+                  TextElement.Foreground="{DynamicResource ControlBarForeground}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition  Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <!--左侧控制按钮-->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Style="{StaticResource ViewPortControlButtonStyle}" Width="64" Height="64" Margin="1"
+                             Command="{Binding PlayActionCommand,RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+                             CommandParameter="DisplayStatus"> 
+                    </Button>
+
+                    <Button Width="64" Height="64"
+                        Command="{Binding PlayActionCommand}" CommandParameter="Preview" >
+                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource PreviewItem}"></TextBlock>
+                    </Button>
+                    <Button Width="64" Height="64"
+                        Command="{Binding PlayActionCommand}" CommandParameter="PlayOrPuase">
+                        <TextBlock Style="{StaticResource IconText}" Text="{Binding IsPaused, Converter={StaticResource MediaConvert}}"></TextBlock>
+                    </Button>
+                    <Button Width="64" Height="64"
+                        Command="{Binding PlayActionCommand}" CommandParameter="Next">
+                        <Button.RenderTransform>
+                            <RotateTransform CenterX="32" CenterY="32" Angle="180"/>
+                        </Button.RenderTransform>
+                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource PreviewItem}"></TextBlock>
+                    </Button>
+                </StackPanel>
+                
+                <!--中间进度条-->
+                <Grid Grid.Column="1" Margin="2,10,2,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    
+                        <TextBlock HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource Foreground}"
+                               ToolTip="{Binding CurrentMedia.Name, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                               Text="{Binding CurrentMedia.Name, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
+                        
+                    <StackPanel Orientation="Horizontal" Grid.Column="1"
+                                HorizontalAlignment="Right" TextElement.Foreground="{DynamicResource Foreground}">
+                            <TextBlock Text="{Binding CurrentPosition, Converter={StaticResource TimeSpanConvet}, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"/>
+                            <TextBlock><Run Text="/"/></TextBlock>
+                            <TextBlock Text="{Binding TotalDuration, Converter={StaticResource DurationConvert}, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
+                        </StackPanel>
+
+                    
+                    <Slider Grid.Row="1" Grid.ColumnSpan="2" 
+                        Margin="0,2,0,4"
+                        IsMoveToPointEnabled="False" 
+                        Background="{DynamicResource SliderBackground}" 
+                        Foreground="{DynamicResource SliderForeground}"
+                        BorderBrush="{DynamicResource SliderBorderground}" 
+                        FontSize="6"
+                        Minimum="0" 
+                        Thumb.DragStarted="Slider_DragStarted" 
+                        Thumb.DragCompleted="Slider_DragCompleted"
+                        Maximum="{Binding TotalDuration, Converter={StaticResource DurationToValue}}"
+                        Value="{Binding CurrentPosition, Converter={StaticResource TimeSpanToValue}, Mode=TwoWay}"/>
+                </Grid>
+
+                <!--右侧功能按钮-->
+                <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right">
+
+                    <ToggleButton Width="64" Height="64"  VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                  Style="{DynamicResource LovelyToggleButton}" 
+                                  IsChecked="{Binding CurrentMedia.IsLovely,Mode=TwoWay}" 
+                        Command="{Binding PlayActionCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                        CommandParameter="MarkLovely">
+                    </ToggleButton>
+                    
+                    <!--<TextBlock Style="{StaticResource IconText}" 
+                                   Foreground="{Binding Tag,
+                            FallbackValue={StaticResource ControlBarForeground},
+                            RelativeSource={RelativeSource  Mode=Self}}"
+                                   Text="{Binding CurrentMedia.IsLovely, Converter={StaticResource LovelyConvert}, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+                        <TextBlock.Tag>
+                            <MultiBinding Converter="{StaticResource MLovelyForegrounConvert}">
+                                <Binding Path="CurrentMedia.IsLovely"></Binding>
+                                <Binding Source="{DynamicResource ControlBarForeground}"></Binding>
+                                <Binding Source="{DynamicResource LovelyMarkForeground}"></Binding>
+                            </MultiBinding>
+                        </TextBlock.Tag>
+                    </TextBlock>-->
+                    <Button Width="64" Height="64"
+                        Command="{Binding PlayActionCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+                        CommandParameter="PlayType">
+                        <TextBlock Style="{StaticResource IconText}"
+                                   Text="{Binding PlayListMode, Converter={StaticResource PlayTypeConvert}, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                   ></TextBlock>
+                    </Button>
+                    <Button Width="64" Height="64" 
+                            FontFamily="{StaticResource IconFont}" x:Name="Volume_Button" 
+                        Click="Volume_Button_Click" MouseDoubleClick="Mute_Button_Click">
+
+                        <TextBlock Style="{StaticResource IconText}">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource VolumeConvert}" >
+                                    <Binding ElementName="Player" Path="Volume"/>
+                                    <Binding ElementName="Player" Path="IsMuted"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Button>
+
+                    <!--音量调节面板-->
+                    <Popup x:Name="Volume_Popup" PopupAnimation="Fade" 
+                       Focusable="True" StaysOpen="False" AllowsTransparency="True"
+                       PlacementTarget="{Binding ElementName=Volume_Button}" 
+                       VerticalOffset="-120" HorizontalOffset="-20" Margin="0"
+                        >
+                        <Grid Background="Transparent" Margin="6" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.Effect>
+                                <DropShadowEffect Color="{DynamicResource InnerShadowColor}" ShadowDepth="0" BlurRadius="6" Direction="0"/>
+                            </Grid.Effect>
+
+                            <Border CornerRadius="5" Margin="0" BorderThickness="0" x:Name="Volume_Border" Padding="0"
+                            Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+                                <DockPanel Width="120" Height="40" >
+                                    <Button Width="24" DockPanel.Dock="Left" Background="Transparent" BorderThickness="0"
+                                    FontFamily="{StaticResource IconFont}" x:Name="Mute_Button" Click="Mute_Button_Click" >
+                                        <Button.Triggers>
+                                            <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ThicknessAnimation Storyboard.TargetName="Mute_Button" 
+                                                                        Storyboard.TargetProperty="BorderThickness"
+                                                                        BeginTime="0" AutoReverse="False" 
+                                                                        To="0" Duration="0" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Button.Triggers>
+                                        <MultiBinding Converter="{StaticResource VolumeConvert}" >
+                                            <Binding ElementName="Player" Path="Volume"/>
+                                            <Binding ElementName="Player" Path="IsMuted"/>
+                                        </MultiBinding>
+                                    </Button>
+                                    <Slider VerticalAlignment="Center" 
+                                            HorizontalAlignment="Stretch"   
+                                            VerticalContentAlignment="Stretch" 
+                                            HorizontalContentAlignment="Stretch"
+                                            Background="{StaticResource SliderBackground}" 
+                                            Foreground="{StaticResource SliderForeground}"
+                                            BorderBrush="{StaticResource SliderBorderground}" 
+                                            Margin="4" Maximum="1" Minimum="0" FontSize="6"
+                                            Value="{Binding Volume, ElementName=Player, Mode=TwoWay}" 
+                                    />
+                                </DockPanel>
+                            </Border>
+                            <Polygon Points="0,0 16,0 8,10" Grid.Row="1"
+                                     Margin="50,-1,0,0" 
+                                 Fill="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type Border}}}"
+                                     StrokeThickness="0"
+                                     Stroke="LightBlue"/>
+                        </Grid>
+                    </Popup>
+
+
+                    <Button Width="64" Height="64" FontSize="16"
+                            x:Name="List_Button" Click="List_Button_Click"
+                            Command="" CommandParameter="">
+                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource List}"></TextBlock>
+                    </Button>
+
+                    <!--当前播放列表-->
+                    <Popup x:Name="List_Popup" AllowsTransparency="True" StaysOpen="False"
+                       Placement="Right" PlacementTarget="{Binding ElementName=List_Button}"
+                       VerticalOffset="-400" HorizontalOffset="-400" Margin="0" PopupAnimation="Fade"
+                       >
+                        <!--<i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Opened">
+                                <i:InvokeCommandAction Command="{Binding DataContext.PopupListCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                   CommandParameter="{Binding ElementName=sub_list}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>-->
+
+                        <Grid Margin="6">
+                            <Grid.Effect>
+                                <DropShadowEffect Color="Gray" BlurRadius="4" Direction="0" ShadowDepth="0"></DropShadowEffect>
+                            </Grid.Effect>
+
+                            <ListView Height="400" Width="400" x:Name="sub_list"  Background="{DynamicResource ListBackgroud}"
+                                  AlternationCount="2" VerticalAlignment="Top"
+                                  Margin="0" BorderThickness="0.5"
+                                  Padding="0" BorderBrush="{DynamicResource BorderLine}"
+                                  ItemsSource="{Binding CurrentList.List,RelativeSource={RelativeSource AncestorType=Window}}"
+                                            ItemTemplate="{StaticResource CurrentListItemDataStyle}" 
+                                            ItemContainerStyle="{StaticResource CurrentListItemStyle}"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                            >
+                            </ListView>
+                              
+                        </Grid>
+                  </Popup>
+
+                </StackPanel>
+
+                <!--窗口大小调整-->
+                <ResizeGrip Grid.Column="2" Width="8" Height="8" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <!--<ResizeGrip.Clip>
+                    <RectangleGeometry RadiusX="1" RadiusY="1"  Rect="8,8,9,9"></RectangleGeometry>
+                </ResizeGrip.Clip>-->
+                </ResizeGrip>
+
+            </Grid>
+
+        </Grid>
+
+        <!--全局遮罩-->
+        <Grid Background="Transparent" Visibility="{Binding TopMask}" Margin="-1">
+            <!--Visibility="{Binding TopMask}">-->
+            <Border BorderBrush="Transparent" BorderThickness="0"
+                    Margin="0" Padding="0">
+                <Border.Effect>
+                    <!--模糊遮罩-->
+                    <BlurEffect KernelType="Gaussian" Radius="5"/>
+                </Border.Effect>
+                <Grid Background="Transparent" Margin="0">
+                    <!--模糊背景-->
+                    <Border Margin="0" BorderThickness="0" Padding="0">
+                        <Border.Background>
+                            <VisualBrush Visual="{Binding ElementName=MainGrid}"  Stretch="None" Opacity="1" />
+                        </Border.Background>
+                    </Border>
+                    <!--叠加颜色-->
+                    <Border Background="{DynamicResource TopMaskOverly}" Opacity="0.5"/>
+                </Grid>
+            </Border>
+            
+            <!--顶层设置界面-->
+            
+            <TabControl Style="{StaticResource NoHeaderTabControlStyle}"
+                        Background="Transparent" SelectedIndex="{Binding TopMaskType}">
+
+                <!--歌单信息修改界面-->
+                <TabItem Name="List_Modify"
+                         IsEnabled="{Binding TopMask,RelativeSource={RelativeSource AncestorType=Window},
+                                     Converter={StaticResource VisibilityBoolConvert}}">
+                    <TabItem.DataContext>
+                        <MultiBinding Converter="{StaticResource SideBarClone}">
+                            <Binding Path="IsEnabled"></Binding>
+                            <Binding Path="SelectedItem" ElementName="Side_Bar"></Binding>
+                        </MultiBinding>
+                    </TabItem.DataContext>
+                    
+                    <i:Interaction.Triggers>
+                        <ie:DataTrigger Binding="{Binding IsEnabled,ElementName=List_Modify}" Value="True">
+                            <i:InvokeCommandAction 
+                                Command="{Binding DataContext.ApplyModifyCommand,RelativeSource={RelativeSource AncestorType=Window}}" 
+                                CommandParameter="{Binding ElementName=List_Modify}"
+                                ></i:InvokeCommandAction>
+                        </ie:DataTrigger>
+                    </i:Interaction.Triggers>
+
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Margin="40"
+                          Background="{StaticResource TopMaskOverly}">
+                        <Grid.Effect>
+                            <DropShadowEffect Color="{DynamicResource InnerShadowColor}" BlurRadius="4" Direction="0" ShadowDepth="0"></DropShadowEffect>
+                        </Grid.Effect>
+                        
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        
+                        <Border Grid.ColumnSpan="2" BorderBrush="{DynamicResource BorderLine}" VerticalAlignment="Top"
+                                BorderThickness="0,0,0,1" Margin="20,0,20,0" Height="40">
+                            <TextBlock Margin="0,0,0,5" FontSize="15" VerticalAlignment="Bottom"><Run Text="编辑歌单信息"/></TextBlock>
+                        </Border>
+
+                        <Button Grid.Column="0" Grid.ColumnSpan="2"
+                                VerticalAlignment="Top" HorizontalAlignment="Right"
+                                Style="{StaticResource CloseButton}"
+                                Command="{Binding TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                CommandParameter="CloseTopMask" />
+
+                        <ScrollViewer Grid.Row="1" Margin="10" >
+                            <Grid Margin="10" 
+                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="64"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Border BorderThickness="1" BorderBrush="{DynamicResource TopMaskOverly}">
+                                        <Image Source="{Binding Medias.Cover, Converter={StaticResource StringImageConvert},ConverterParameter=MediaList}" 
+                                           Width="168" Height="168" VerticalAlignment="Center" Stretch="UniformToFill">
+                                        </Image>
+                                            <Border.Effect>
+                                                <DropShadowEffect Color="{DynamicResource ImageShadowColor}" BlurRadius="4" Direction="0" ShadowDepth="0"></DropShadowEffect>
+                                            </Border.Effect>                                        
+                                    </Border>
+
+                                    <Button Height="24" Width="48" Margin="1" Style="{x:Null}" BorderThickness="0"
+                                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                                        ToolTip="更改封面"
+                                        Command="{Binding DataContext.CoverCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
+                                        CommandParameter="{Binding Medias}" >
+
+                                        <Button.Background>
+                                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                                <LinearGradientBrush.GradientStops>
+                                                    <GradientStopCollection>
+                                                        <GradientStop Color="{DynamicResource MP3EndColor}" Offset="1"/>
+                                                        <GradientStop Color="{DynamicResource MP3StartColor}" Offset="0"/>
+                                                    </GradientStopCollection>
+                                                </LinearGradientBrush.GradientStops>
+                                            </LinearGradientBrush>
+                                        </Button.Background>
+                                        <TextBlock Style="{StaticResource IconText}" Text="{StaticResource Camera}" FontSize="18"/>
+                                    </Button>
+                                </Grid>
+
+
+                                <TextBlock Text="名称:" Margin="0,0,10,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0"/>
+                                <TextBox MaxLength="20" Height="32" Grid.Row="1" Grid.Column="1"
+                                             HorizontalAlignment="Stretch" VerticalContentAlignment="Center" 
+                                             Text="{Binding Medias.Name}" Background="Transparent" BorderBrush="{DynamicResource UnderLine}"/>
+                                <TextBlock Text="标签:" Margin="0,0,10,0" VerticalAlignment="Center"   Grid.Row="2" Grid.Column="0"/>
+
+                                <Grid Grid.Row="2" Grid.Column="1" Height="32">
+                                    <WrapPanel ItemHeight="32" ItemWidth="32" HorizontalAlignment="Stretch"> 
+                                    </WrapPanel>
+                                    <TextBlock Text="选择标签" Foreground="{DynamicResource UnderLine}" HorizontalAlignment="Right"
+                                               VerticalAlignment="Center" TextDecorations="Underline"/>
+                                </Grid>
+                               
+                                <TextBlock Text="介绍:" Margin="0,10,10,0"  VerticalAlignment="Top" Grid.Row="3" Grid.Column="0" />
+                                <TextBox MaxLength="1000" AcceptsReturn="True" Grid.Row="3" Grid.Column="1"  MinHeight="32"
+                                         Background="Transparent" BorderBrush="{DynamicResource UnderLine}"
+                                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Text="{Binding Medias.Summary}"/>
+                         
+                            
+                            </Grid>
+                        </ScrollViewer>
+
+                        <Border Grid.Row="2" Grid.ColumnSpan="2" Margin="20,0,20,0" Height="64"
+                                BorderBrush="{DynamicResource BorderLine}" BorderThickness="0,1,0,0"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,20" HorizontalAlignment="Right">
+                                <Button Width="64" 
+                                        Margin="0,0,5,0"
+                                        Style="{StaticResource SureButton}"
+                                        Command="{Binding DataContext.ApplyModifyCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                        Content="确定">
+                                    <Button.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                            <Binding Source="SideBar"></Binding>
+                                            <Binding ElementName="Side_Bar" Path="SelectedItem"></Binding>
+                                            <Binding ></Binding>
+                                        </MultiBinding>
+                                    </Button.CommandParameter>
+                                    
+                                </Button>
+
+                                <Button Width="64"
+                                        Margin="5,0,0,0"
+                                        Style="{StaticResource CancelButton}"
+                                        Command="{Binding TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                        CommandParameter="CloseTopMask"
+                                        Content="取消"
+                                        />
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+                </TabItem>
+
+                <!--用户信息修改-->
+                <TabItem >
+                    <Grid Background="{DynamicResource TopMaskOverly}" Margin="40" >
+                        <Grid.Effect>
+                            <DropShadowEffect Color="{DynamicResource InnerShadowColor}" BlurRadius="8" ShadowDepth="0" Direction="0"/>
+                        </Grid.Effect>
+                       
+                        <Button Height="32" Width="32" Panel.ZIndex="12" BorderThickness="0"
+                                Style="{StaticResource CloseButton}" 
+                                HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Command="{Binding TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                CommandParameter="CloseTopMask"/>
+                        
+                        <TabControl SelectedIndex="{Binding TopMaskSubType}" 
+                                    BorderThickness="0" Background="Transparent">
+                            <!--用户信息-->
+                            <TabItem Style="{StaticResource SettingTabItemStyle}" Header="用户信息" Background="Transparent">
+                                <Grid Margin="10" HorizontalAlignment="Center" VerticalAlignment="Stretch">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="200"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Border Background="Black" Height="200" Width="200" CornerRadius="200">
+                                        <Border.Effect>
+                                            <DropShadowEffect Color="{DynamicResource ImageShadowColor}" BlurRadius="12" Direction="0" ShadowDepth="0"/>
+                                        </Border.Effect>
+
+                                        <Image Stretch="UniformToFill" 
+                                            Source="{Binding DataContext.US.UserImage,RelativeSource={RelativeSource AncestorType=Window},Converter={StaticResource StringImageConvert},ConverterParameter=User}" Height="200">
+                                            <Image.Clip>
+                                                <EllipseGeometry Center="100,100" RadiusX="100" RadiusY="100"/>
+                                            </Image.Clip>
+                                        </Image>
+                                    </Border>
+
+                                    <Button Height="32" Width="64" Background="Transparent" Margin="180,160,0,0"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Command="{Binding DataContext.CoverCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="UserImage">
+                                        <TextBlock FontFamily="{StaticResource IconFont}" Text="{StaticResource Camera}"
+                                                   ToolTip="更改头像" FontSize="24"
+                                                   />
+                                    </Button>
+
+                                    <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,20" Background="Transparent" Height="32">
+
+                                        <TextBlock VerticalAlignment="Top" Margin="0,10,10,0" Text="用户名:"/>
+                                        <ed:EditTextBox BorderBrush="{DynamicResource UnderLine}"
+                                                        BorderThickness="0,0,0,1"
+                                                        Grid.Column="1" Width="200"
+                                                        Text="{Binding DataContext.US.UserName,RelativeSource={RelativeSource AncestorType=Window},Mode=TwoWay}"
+                                                            VerticalContentAlignment="Center">
+                                            <ed:EditTextBox.Icon>
+                                                <TextBlock Text="{StaticResource EditeLine}" FontFamily="{StaticResource IconFont}" FontSize="14"/>
+                                            </ed:EditTextBox.Icon>
+
+                                        </ed:EditTextBox>
+
+                                    </StackPanel>
+                                </Grid>
+                            </TabItem>
+                            <!--系统设置-->
+                            <TabItem Style="{StaticResource SettingTabItemStyle}" Header="系统设置" Background="Transparent">
+                                <Grid Margin="20,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    
+                                    <Border Height="18"></Border>
+                                    
+                                    <ScrollViewer Grid.Row="1"
+                                        VerticalScrollBarVisibility="Auto" 
+                                        HorizontalScrollBarVisibility="Disabled">
+                                    
+                                        <StackPanel Orientation="Vertical" 
+                                                    VerticalAlignment="Stretch" 
+                                                    Margin="10,20" Background="Transparent">
+                                       
+                                            <GroupBox Header="搜索" BorderBrush="{DynamicResource UnderLine}" Background="Transparent" >
+                                                <GroupItem>
+                                                    <CheckBox Margin="15" Content="启用实时搜索" 
+                                                              IsChecked="{Binding DataContext.US.EnableRealTimeSearch,RelativeSource={RelativeSource AncestorType=Window}}"></CheckBox>
+                                                
+                                                </GroupItem>
+                                            </GroupBox>
+
+                                            <GroupBox Header="本地资源" Margin="0,15" BorderBrush="{DynamicResource UnderLine}">
+                                                <GroupItem>
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition></RowDefinition>
+                                                            <RowDefinition></RowDefinition>
+                                                            <RowDefinition Height="Auto"></RowDefinition>
+                                                        </Grid.RowDefinitions>
+
+                                                        <Grid Margin="5">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                                <ColumnDefinition></ColumnDefinition>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="扫描文件类型 :" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                                            <ed:EditTextBox Grid.Column="1" Height="32" Background="Transparent" 
+                                                                            BorderBrush="{DynamicResource UnderLine}" BorderThickness="0,0,0,1" TextWrapping="NoWrap"
+                                                                            VerticalContentAlignment="Center" 
+                                                                            Text="{Binding DataContext.US.MediaTypes,RelativeSource={RelativeSource AncestorType=Window},Mode=TwoWay}">
+                                                                <ed:EditTextBox.Icon>
+                                                                    <Border Height="30">
+                                                                        <TextBlock Text="{StaticResource EditeLine}" 
+                                                                                   FontFamily="{StaticResource IconFont}"
+                                                                                   TextAlignment="Center" VerticalAlignment="Center"
+                                                                                   FontSize="14" Margin="5,0" />
+                                                                    </Border>
+
+                                                                </ed:EditTextBox.Icon>
+
+                                                            </ed:EditTextBox>
+                                                        </Grid>
+                                                    
+
+                                                        <Grid Grid.Row="1" Margin="5,15,5,5" Background="Transparent">
+                                                                <TextBlock Text="扫描路径 :" VerticalAlignment="Center"/>
+                                                                <Border Width="0"/>
+                                                                <Button Height="32" Width="84"
+                                                                        HorizontalAlignment="Right"
+                                                                        Style="{DynamicResource BaseButton}"
+                                                                        Content="添加文件夹"
+                                                                        Command="{Binding DataContext.CoverCommand,RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                        CommandParameter="PickPath"/>
+                                                         </Grid>
+
+                                                        <ListBox Grid.Row="2" Margin="5,10" Background="Transparent" MinHeight="64"
+                                                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                                     BorderBrush="{DynamicResource UnderLine}" 
+                                                                     ItemTemplate="{StaticResource PathListItemDataStyle}"
+                                                                     ItemContainerStyle="{StaticResource PathListItemStyle}"
+                                                                     ItemsSource="{Binding DataContext.US.ListenPath,RelativeSource={RelativeSource AncestorType=Window }}">
+                                                            <i:Interaction.Triggers>
+                                                                <i:EventTrigger EventName="PreviewMouseWheel">
+                                                                    <ie:CallMethodAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                                             MethodName="PopupEvent" />
+                                                                </i:EventTrigger>
+                                                            </i:Interaction.Triggers>
+                                                        </ListBox>                                                    
+                                                    </Grid>
+                                                </GroupItem>
+                                            </GroupBox>
+
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                    
+                                    <Border Height="18" Background="Transparent" Grid.Row="2"></Border>
+                                </Grid>
+
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
+                </TabItem>
+                <!--删除确认-->
+                <TabItem>
+                    <Grid  HorizontalAlignment="Center" VerticalAlignment="Center" 
+                          Height="200" Width="400" Background="{DynamicResource TopMaskOverly}">
+                        <Grid.Effect>
+                            <DropShadowEffect Color="{DynamicResource InnerShadowColor}" BlurRadius="4" Direction="0" ShadowDepth="0"></DropShadowEffect>
+                        </Grid.Effect>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height=" Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Button Style="{StaticResource CloseButton}" VerticalAlignment="Top" HorizontalAlignment="Right"
+                                Command="{Binding TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                CommandParameter="CloseTopMask"></Button>
+
+                        <Border BorderBrush="{DynamicResource BorderLine}" BorderThickness="0,0,0,1" Margin="20,0">
+                            <TextBlock Text="删除确认" Margin="10" FontSize="16"/>
+                        </Border>
+                        <StackPanel Orientation="Vertical" Grid.Row="1" Margin="20" VerticalAlignment="Center">
+                            <TextBlock FontSize="14"><Run Text="是否确定删除:"/></TextBlock>
+                            <TextBlock FontWeight="DemiBold" TextWrapping="Wrap" Foreground="#ff2277FF" Text="{Binding SelectedItem.Title, ElementName=Side_Bar}"/>
+                        </StackPanel>
+
+                        <Border Grid.Row="2" BorderBrush="{DynamicResource BorderLine}" BorderThickness="0,1,0,0" Margin="20,0" 
+                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,0,10">
+                                <Button Style="{StaticResource SureButton}"
+                                        Height="32" Width="64" Margin="10,0" Content="确定"
+                                        Command="{Binding DataContext.ListCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+                                    <Button.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                            <Binding Source="Delete" />
+                                            <Binding Path="SelectedItem" ElementName="Side_Bar"/>
+                                        </MultiBinding>
+                                    </Button.CommandParameter>
+                                </Button>
+                                <Button Height="32" Width="64" Style="{StaticResource CancelButton}"
+                                        Command="{Binding TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                        CommandParameter="CloseTopMask"
+                                        Content="取消"
+                                        />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                <!--媒体信息更改-->
+                <TabItem>
+                    <Grid  HorizontalAlignment="Stretch" 
+                           VerticalAlignment="Stretch" 
+                           Margin="40"
+                           Background="{DynamicResource TopMaskOverly}" 
+                           Name="Media_Modify"
+                           DataContext="{Binding CurrentMedia,Converter={StaticResource CopyMediaData}}"
+                           Tag="{Binding CurrentMedia,RelativeSource={RelativeSource AncestorType=Window}}"
+                           IsEnabled="{Binding TopMask,RelativeSource={RelativeSource AncestorType=Window},
+                                        Converter={StaticResource VisibilityBoolConvert}}">
+                        <i:Interaction.Triggers>
+                            <ie:DataTrigger Binding="{Binding IsEnabled,ElementName=List_Modify}" Value="True">
+                                <i:InvokeCommandAction  
+                                    Command="{Binding DataContext.ApplyModifyCommand,RelativeSource={RelativeSource AncestorType=Window}}" 
+                                    CommandParameter="{Binding ElementName=Media_Modify}"
+                                                        ></i:InvokeCommandAction>
+                            </ie:DataTrigger>
+                        </i:Interaction.Triggers>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.Effect>
+                            <DropShadowEffect Color="{DynamicResource InnerShadowColor}" BlurRadius="8" ShadowDepth="0" Direction="0"/>
+                        </Grid.Effect>
+                        
+                        <Border BorderBrush="{DynamicResource BorderLine}" BorderThickness="0,0,0,1" Margin="10">
+                            <TextBlock Text="设置媒体信息" Margin="0,5">  </TextBlock>
+                        </Border>
+                        <Button Grid.Column="0" Grid.ColumnSpan="2"
+                                VerticalAlignment="Top" HorizontalAlignment="Right"
+                                Height="32" Width="32"
+                                Style="{StaticResource CloseButton}"
+                                Command="{Binding TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                CommandParameter="CloseTopMask"
+                                />
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Border BorderThickness="1" Grid.Row="0" BorderBrush="{DynamicResource TopMaskOverly}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10">
+                                <Image Source="{Binding Cover,Converter={StaticResource StringImageConvert},ConverterParameter=Media}"
+                                       Height="200" Width="200" Stretch="UniformToFill"></Image>
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="2" Color="{DynamicResource ImageShadowColor}" Direction="0" ShadowDepth="0"></DropShadowEffect>
+                                </Border.Effect>
+                            </Border>
+                        
+                            <DockPanel Grid.Row="1" Margin="15,5" Height="32">
+                                <TextBlock Text="名称：" VerticalAlignment="Center"></TextBlock>
+                                <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Text="{Binding Name}"  Background="Transparent" BorderBrush="{DynamicResource UnderLine}"></TextBox>
+                            </DockPanel>
+                            <DockPanel Grid.Row="2" Margin="15,5" Height="32">
+                                <TextBlock Text="专辑：" VerticalAlignment="Center"></TextBlock>
+                                <TextBox HorizontalAlignment="Stretch"  VerticalContentAlignment="Center" Text="{Binding Album}"  Background="Transparent" BorderBrush="{DynamicResource UnderLine}"></TextBox>
+                            </DockPanel>
+                            <DockPanel Grid.Row="3" Margin="15,5" Height="32">
+                                <TextBlock Text="歌手：" VerticalAlignment="Center"></TextBlock>
+                                <TextBox HorizontalAlignment="Stretch" VerticalContentAlignment="Center"  Text="{Binding Artist}"  Background="Transparent" BorderBrush="{DynamicResource UnderLine}"></TextBox>
+                            </DockPanel>                            
+                        </Grid>
+
+
+                        <Border Grid.Row="2" BorderThickness="0,1,0,0" Margin="20,10" BorderBrush="{DynamicResource BorderLine}"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,0,10">
+                                <Button 
+                                        Height="32" Width="64" Margin="10,0" Content="确定" Style="{StaticResource SureButton}"
+                                        Command="{Binding DataContext.ApplyModifyCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+                                    <Button.CommandParameter>
+                                        <MultiBinding Converter="{StaticResource PlayMultyConvert}">
+                                            <Binding Source="ChangeInfo" />
+                                            <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=Self}"></Binding>
+                                            <Binding Path="Tag" RelativeSource="{RelativeSource AncestorType=Grid}"></Binding>
+                                        </MultiBinding>
+                                    </Button.CommandParameter>
+                                </Button>
+                                <Button 
+                                        Height="32" Width="64" Style="{StaticResource CancelButton}"
+                                        Command="{Binding TopMaskCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                        CommandParameter="CloseTopMask"
+                                        Content="取消"
+                                        />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+            
+            </TabControl>
+        </Grid>
+
+    </Grid>
+</fl:FrameLessWindow>

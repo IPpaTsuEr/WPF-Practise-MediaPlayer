@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<UserSetting>
+<UserName>BileActor</UserName>
+  <Volume>0.5</Volume>
+  <OpenBehavior>1</OpenBehavior>
+  <MediaTypes>.mp4|.mp3</MediaTypes>
+  <ListenPath>
+    <Path>E:\Windows\Downloads</Path>
+  </ListenPath>
+</UserSetting>
