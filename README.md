@@ -10,6 +10,6 @@
   >4.支持视频播放（可播放格式受WindowsMediaPlayer限制）、图片浏览
 
 UI:  
->![Main](https://github.com/IPpaTsuEr/WPF-Practise-MediaPlayer/raw/master/UI/UI_Main.png)  
->![Play](https://github.com/IPpaTsuEr/WPF-Practise-MediaPlayer/raw/master/UI/UI_Play.jpg)  
->![PlayCover](https://github.com/IPpaTsuEr/WPF-Practise-MediaPlayer/raw/master/UI/UI_PlayWithCover.jpg)
+>![UI/Main](https://github.com/IPpaTsuEr/WPF-Practise-MediaPlayer/raw/master/UI/UI_Main.png)  
+>![UI/Play](https://github.com/IPpaTsuEr/WPF-Practise-MediaPlayer/raw/master/UI/UI_Play.jpg)  
+>![UI/PlayCover](https://github.com/IPpaTsuEr/WPF-Practise-MediaPlayer/raw/master/UI/UI_PlayWithCover.jpg)
